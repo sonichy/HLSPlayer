@@ -1,5 +1,7 @@
 var url = document.URL;
 var video = document.getElementById('video');
+video.oncanplay = function(){ console.log('Resolution: ' + video.videoWidth + ' X ' + video.videoHeight); }
+
 if(Hls.isSupported()) {
     var hls = new Hls();
     hls.loadSource(url.split('#')[1]);
@@ -41,3 +43,52 @@ video.onclick = function(){
         video.pause();
     }
 }
+
+function filename() {
+	var d = new Date();
+	var y = d.getFullYear();
+	var m = d.getMonth()+1;
+	var date = d.getDate();
+	var h = d.getHours();
+	var min = d.getMinutes();
+	var s = d.getSeconds();
+	var mo = m<10 ? '0' + m : '' + m;
+	var dd = date<10 ? '0' + date : '' + date;
+	var hh = h<10 ? '0' + h : '' + h;
+	var mm = min<10 ? '0' + min : '' + min;
+	var ss = s<10 ? '0' + s : '' + s;      
+	var fn = 'HLS' + y + mo + dd + hh + mm + ss + '.jpg';
+	return fn;
+}
+
+function capture(){
+    var canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);    
+    var link = document.createElement('a');
+	link.download = filename();
+	link.href = canvas.toDataURL('image/jpeg');
+	link.click();
+}
+
+function property(){
+	alert("Resolution: " + video.videoWidth + ' X ' + video.videoHeight);
+}
+
+chrome.extension.onRequest.addListener(
+	function(request, sender, sendResponse) {
+		console.log(sender.tab ?
+					"from a content script:" + sender.tab.url :
+					"from the extension");
+		if (request.capture == "capture start"){
+			capture();
+			sendResponse({capture: "capture done"});
+		} else if (request.property == "property start"){
+			property();
+			sendResponse({property: "property done"});
+		} else {
+			sendResponse({});
+		}
+	}
+);
