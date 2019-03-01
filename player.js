@@ -1,6 +1,8 @@
 var url = document.URL;
 var video = document.getElementById('video');
-video.oncanplay = function(){ console.log('Resolution: ' + video.videoWidth + ' X ' + video.videoHeight); }
+video.oncanplay = function(){
+	document.title = 'HLSPlayer (' + video.videoWidth + ' X ' + video.videoHeight + ')';
+}
 
 if(Hls.isSupported()) {
     var hls = new Hls();
@@ -62,18 +64,20 @@ function filename() {
 }
 
 function capture(){
-    var canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);    
-    var link = document.createElement('a');
-	link.download = filename();
-	link.href = canvas.toDataURL('image/jpeg');
-	link.click();
+	if(video.videoWidth != 0 || video.videoHeight != 0){
+		var canvas = document.createElement('canvas');
+		canvas.width = video.videoWidth;
+		canvas.height = video.videoHeight;
+		canvas.getContext('2d').drawImage(video, 0, 0);    
+		var link = document.createElement('a');
+		link.download = filename();
+		link.href = canvas.toDataURL('image/jpeg');
+		link.click();
+	}
 }
 
 function property(){
-	alert("Resolution: " + video.videoWidth + ' X ' + video.videoHeight);
+	alert('Resolution: ' + video.videoWidth + ' X ' + video.videoHeight);
 }
 
 chrome.extension.onRequest.addListener(

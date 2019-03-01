@@ -1,9 +1,11 @@
+var playerUrl = chrome.runtime.getURL('player.htm');
+
 chrome.webRequest.onBeforeRequest.addListener(	
 	function(info) {
 		console.log(info);
 		if (info.url.indexOf(".m3u8") != -1) {
-			var playerUrl = chrome.runtime.getURL('player.html') + "#" + info.url;
-			return { redirectUrl:  playerUrl }      
+			var url = playerUrl + "#" + info.url;
+			return { redirectUrl: url }      
 		}
 	},
 	{urls: ["*://*/*.m3u8*"], types:["main_frame"]},
@@ -11,7 +13,7 @@ chrome.webRequest.onBeforeRequest.addListener(
 );
 
 chrome.browserAction.onClicked.addListener(function (tab) {
-	chrome.tabs.create({ 'url': chrome.extension.getURL('player.html') + '#' }, function(tab){ });
+	chrome.tabs.create({ 'url': playerUrl + '#' }, function(tab){ });
 });
 
 function captureClicked(info, tab) {
@@ -26,6 +28,20 @@ function propertyClicked(info, tab) {
 	});
 }
 
-chrome.contextMenus.create({ id : "capture" , title: "Capture", contexts : ["video"], onclick : captureClicked });
+showForPages = [ playerUrl + "*" ];
 
-chrome.contextMenus.create({ id : "property", title : "Property", contexts : ["video"], onclick : propertyClicked });
+chrome.contextMenus.create({
+	id : "capture",
+	title: "Capture",
+	contexts : ["video"],
+	documentUrlPatterns : showForPages,
+	onclick : captureClicked
+});
+
+chrome.contextMenus.create({
+	id : "property",
+	title : "Property",
+	contexts : ["video"],
+	documentUrlPatterns : showForPages,
+	onclick : propertyClicked
+});
