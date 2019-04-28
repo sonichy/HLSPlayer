@@ -91,6 +91,7 @@ chrome.extension.onRequest.addListener(
 				var updateInfo = {
 					left: wind.left,
 					top: wind.top,
+					state: "normal",
 					width: video.videoWidth/2 + dw,
 					height: video.videoHeight/2 + dh
 				};
@@ -104,6 +105,7 @@ chrome.extension.onRequest.addListener(
 				var updateInfo = {
 					left: wind.left,
 					top: wind.top,
+					state: "normal",
 					width: video.videoWidth + dw,
 					height: video.videoHeight + dh
 				};
