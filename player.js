@@ -82,10 +82,34 @@ function property(){
 
 chrome.extension.onRequest.addListener(
 	function(request, sender, sendResponse) {
-		console.log(sender.tab ?
-					"from a content script:" + sender.tab.url :
-					"from the extension");
-		if (request.capture == "capture start"){
+		console.log(request);
+		if (request.resize == "resize 0.5X"){
+			chrome.windows.getCurrent(function(wind) {
+				console.log(wind);
+				var dw = wind.width - document.body.clientWidth;
+				var dh = wind.height - document.body.clientHeight;
+				var updateInfo = {
+					left: wind.left,
+					top: wind.top,
+					width: video.videoWidth/2 + dw,
+					height: video.videoHeight/2 + dh
+				};
+				chrome.windows.update(wind.id, updateInfo);
+			});
+		} else if (request.resize == "resize 1X") {
+			chrome.windows.getCurrent(function(wind) {
+				console.log(wind);
+				var dw = wind.width - document.body.clientWidth;
+				var dh = wind.height - document.body.clientHeight;
+				var updateInfo = {
+					left: wind.left,
+					top: wind.top,
+					width: video.videoWidth + dw,
+					height: video.videoHeight + dh
+				};
+				chrome.windows.update(wind.id, updateInfo);
+			});
+		} else if (request.capture == "capture start"){
 			capture();
 			sendResponse({capture: "capture done"});
 		} else if (request.property == "property start"){
