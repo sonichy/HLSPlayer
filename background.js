@@ -40,6 +40,18 @@ function propertyClicked(info, tab) {
 	});
 }
 
+function rotate90Clicked(info, tab) {
+	chrome.tabs.sendRequest(tab.id, {rotate: "90"}, function(response) {
+		console.log(response.rotate);
+	});
+}
+
+function rotate0Clicked(info, tab) {
+	chrome.tabs.sendRequest(tab.id, {rotate: "0"}, function(response) {
+		console.log(response.rotate);
+	});
+}
+
 showForPages = [ playerUrl + "*" ];
 
 chrome.contextMenus.create({
@@ -72,4 +84,20 @@ chrome.contextMenus.create({
 	contexts : ["video"],
 	documentUrlPatterns : showForPages,
 	onclick : propertyClicked
+});
+
+chrome.contextMenus.create({
+	id : "rotate0",
+	title : "Rotate 0",
+	contexts : ["video"],
+	documentUrlPatterns : showForPages,
+	onclick : rotate0Clicked
+});
+
+chrome.contextMenus.create({
+	id : "rotate90",
+	title : "Rotate 90",
+	contexts : ["video"],
+	documentUrlPatterns : showForPages,
+	onclick : rotate90Clicked
 });

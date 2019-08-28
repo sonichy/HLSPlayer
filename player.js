@@ -46,21 +46,15 @@ video.onclick = function(){
     }
 }
 
-function filename() {
-	var d = new Date();
-	var y = d.getFullYear();
-	var m = d.getMonth()+1;
-	var date = d.getDate();
-	var h = d.getHours();
-	var min = d.getMinutes();
-	var s = d.getSeconds();
-	var mo = m<10 ? '0' + m : '' + m;
-	var dd = date<10 ? '0' + date : '' + date;
-	var hh = h<10 ? '0' + h : '' + h;
-	var mm = min<10 ? '0' + min : '' + min;
-	var ss = s<10 ? '0' + s : '' + s;      
-	var fn = 'HLS' + y + mo + dd + hh + mm + ss + '.jpg';
-	return fn;
+function hms(s) {
+	var h = Math.floor(s/3600);
+	var m = Math.floor(s/60 - h*60);
+	var s1 = Math.floor(s - h*3600 - m*60);
+	var hh = h<10?'0'+h:''+h;
+	var mm = m<10?'0'+m:''+m;
+	var ss = s1<10?'0'+s1:''+s1;
+	var hms1 = hh + mm + ss;
+	return hms1;
 }
 
 function capture(){
@@ -70,7 +64,8 @@ function capture(){
 		canvas.height = video.videoHeight;
 		canvas.getContext('2d').drawImage(video, 0, 0);    
 		var link = document.createElement('a');
-		link.download = filename();
+		var fn = hms(video.currentTime) + '.jpg';
+		link.download = fn;
 		link.href = canvas.toDataURL('image/jpeg');
 		link.click();
 	}
@@ -78,6 +73,10 @@ function capture(){
 
 function property(){
 	alert('Resolution: ' + video.videoWidth + ' X ' + video.videoHeight);
+}
+
+function rotate(deg){
+	video.style.webkitTransform = "rotate(" + deg + "deg)";
 }
 
 chrome.extension.onRequest.addListener(
@@ -117,6 +116,12 @@ chrome.extension.onRequest.addListener(
 		} else if (request.property == "property start"){
 			property();
 			sendResponse({property: "property done"});
+		} else if (request.rotate == "90"){
+			rotate(90);
+			sendResponse({rotate: "rotate 90"});
+		} else if (request.rotate == "0"){
+			rotate(0);
+			sendResponse({rotate: "rotate 0"});
 		} else {
 			sendResponse({});
 		}
